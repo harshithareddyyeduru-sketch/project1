@@ -1,11 +1,8 @@
-
-
 DROP TABLE IF EXISTS fact_sales CASCADE;
 DROP TABLE IF EXISTS dim_customer CASCADE;
 DROP TABLE IF EXISTS dim_product CASCADE;
 DROP TABLE IF EXISTS dim_date CASCADE;
 DROP TABLE IF EXISTS retailsalespro CASCADE;
-
 
 /* ============================================================
    STEP 2 — CREATE RAW STAGING TABLE
@@ -48,7 +45,6 @@ FROM retailsalespro;
    ============================================================ */
 
 -- 5.1 Customer Dimension
-
 CREATE TABLE dim_customer AS
 SELECT
     customer_id,
@@ -84,7 +80,6 @@ FROM retailsalespro;
 ALTER TABLE dim_date
 ADD PRIMARY KEY (date);
 
-
 /* ============================================================
    STEP 6 — CREATE FACT TABLE
    ============================================================ */
@@ -108,7 +103,6 @@ ALTER COLUMN quantity SET NOT NULL,
 ALTER COLUMN price SET NOT NULL,
 ALTER COLUMN revenue SET NOT NULL;
 
-
 /* ============================================================
    STEP 7 — ADD FOREIGN KEY CONSTRAINTS
    ============================================================ */
@@ -128,7 +122,6 @@ ADD CONSTRAINT fk_date
 FOREIGN KEY (date)
 REFERENCES dim_date(date);
 
-
 /* ============================================================
    STEP 8 — ADD PERFORMANCE INDEXES
    (Critical for <2 second query requirement)
@@ -139,7 +132,6 @@ CREATE INDEX idx_fact_product ON fact_sales(stockcode);
 CREATE INDEX idx_fact_date ON fact_sales(date);
 CREATE INDEX idx_fact_invoice ON fact_sales(invoice);
 VACUUM ANALYZE fact_sales;
-
 
 /* ============================================================
    STEP 9 — PERFORMANCE VALIDATION CHECK
@@ -152,10 +144,8 @@ GROUP BY customer_id
 ORDER BY total_revenue DESC
 LIMIT 10;
 
-
 /* If execution is slow, run: */
 -- VACUUM ANALYZE fact_sales;
-
 
 /* ============================================================
    STEP 10 — CORE BUSINESS VALIDATION QUERIES
@@ -189,4 +179,5 @@ SELECT c.country, SUM(f.revenue) AS country_revenue
 FROM fact_sales f
 JOIN dim_customer c ON f.customer_id = c.customer_id
 GROUP BY c.country
+
 ORDER BY country_revenue DESC;
